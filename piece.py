@@ -26,7 +26,7 @@ class Piece:
 				r += row
 				c += col
 
-			moves.append([r, c])
+			moves.append((r, c))
 
 		return moves
 
@@ -62,7 +62,7 @@ class King(Piece):
 
 		# CASTLING!!!!
 
-		return [[self.pos[0]+row, self.pos[1]+col]		##pos##
+		return [(self.pos[0]+row, self.pos[1]+col)		##pos##
 							for row, col in cardinal_offsets
 							               +diagonal_offsets]
 
@@ -86,12 +86,12 @@ class Pawn(Piece):
 			┃   ┃ ♟ ┃   ┃
 			┗━━━┻━━━┻━━━┛
 		'''
-		advance = [self.pos[0]+offset, self.pos[1]]
+		advance = (self.pos[0]+offset, self.pos[1])
 		if (board.check_bounds(advance)
 				and not board.get(advance)):
 			all_moves.append(advance)
 
-			advance_two = [self.pos[0] + offset*2, self.pos[1]]
+			advance_two = (self.pos[0] + offset*2, self.pos[1])
 			if (board.check_bounds(advance_two)
 					and not self.moved
 					and not board.get(advance_two)):
@@ -107,7 +107,7 @@ class Pawn(Piece):
 			┗━━━┻━━━┻━━━┛
 		'''
 		for offset_col in [-1, 1]:
-			capture = [self.pos[0]+offset, self.pos[1]+offset_col]
+			capture = (self.pos[0]+offset, self.pos[1]+offset_col)
 			if (board.check_bounds(capture)
 					and  board.get(capture)
 					and  board.get(capture).colour!=self.colour):
@@ -155,7 +155,7 @@ class Knight(Piece):
 			[ 2, -1], [ 2,  1],
 		]
 
-		return [[self.pos[0]+row, self.pos[1]+col]
+		return [(self.pos[0]+row, self.pos[1]+col)
 							for row, col in offsets]
 
 
