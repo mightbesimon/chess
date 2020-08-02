@@ -131,7 +131,18 @@ class Board:
 		return False
 
 	def is_checkmate(self, colour):
-		return self.is_check(colour) and not self.get_all_legal_moves(colour)
+		# checkmate conditions:
+		#  - is currently in check
+		#  - no legal moves
+		return self.is_check(colour)	\
+		   and not self.get_all_legal_moves(colour)
+
+	def is_stalemate(self, colour):
+		# stalemate conditions:
+		#  - is not currently under check
+		#  - no legal moves
+		return not self.is_check(colour)	\
+		   and not self.get_all_legal_moves(colour)
 
 	def get_all_legal_moves(self, colour):
 		all_legal_moves = []
