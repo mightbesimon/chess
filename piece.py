@@ -42,10 +42,18 @@ class Piece:
 			 - not land on same colour
 			 - will not be under check
 		'''
-		return (board.check_bounds(move)
-			and (board.get(move).colour!=self.colour
-					if board.get(move) else True)
-			and not board.is_check(self.colour))	# this is wrong and needs fixing
+		# return (board.check_bounds(move)
+		# 	and (board.get(move).colour!=self.colour
+		# 			if board.get(move) else True)
+		# 	and not board.is_check(self.colour))	# this is wrong and needs fixing
+		if (board.check_bounds(move)
+				and (board.get(move).colour!=self.colour
+			 			if board.get(move) else True)):
+			copy = board.clone()
+			copy.make_move(copy.get(self.pos), move)
+			if not copy.is_check(self.colour): return True
+
+		return False
 
 	def get_legal_moves(self, board):
 		# legal moves
