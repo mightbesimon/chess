@@ -17,6 +17,7 @@ class Board:
 	# 	return self.display()
 
 	def set_up(self):
+		# for n*8 boards only
 		self.tiles[0] = [
 			Rook  (WHITE, [0, 0]),
 			Knight(WHITE, [0, 1]),
@@ -97,11 +98,56 @@ class Board:
 	# def coords(self, pos):
 	# 	return chr(97+pos[1])+str(pos[0]+1)
 
+##### ^ initialise, setup || input/output ^ #####
+##### condition functions #####
+
+
 	def get(self, pos):
-		return self.tiles[pos[0]][pos[1]]
+		return self.tiles[pos[0]][pos[1]] if self.check_bounds(pos) else False
 
 	def set(self, pos, piece):
 		self.tiles[pos[0]][pos[1]] = piece
+
+	def check_bounds(self, pos):
+		return (0<=pos[0]<self.DIMENSIONS[0]
+		   and  0<=pos[1]<self.DIMENSIONS[1])
+
+	def iterate(self):
+		return [self.tiles[row][col] for row in range(self.DIMENSIONS[0])
+									for col in range(self.DIMENSIONS[1])
+									if self.tiles[row][col]]
+
+	def is_check(self, colour):
+		# check to see if opponent can make
+		# any move to take the king
+		# does not have to be legal moves
+		# since player is under check if there is any move
+		for piece in self.iterate():
+			if piece.colour==colour: continue
+			for move in piece.get_moves(self):
+				piece = self.get(move)
+				if (piece and type(piece)==King
+						and piece.colour==colour):
+					return True
+		return False
+
+	def is_checkmate(self, colour):
+		''' checkmate conditions:
+			 - is currently in check
+			 - no legal moves
+		'''
+		return self.is_check(colour)	\
+		   and not self.get_all_legal_moves(colour)
+
+	def is_stalemate(self, colour):
+		'''	stalemate conditions:
+			 - is not currently under check
+			 - no legal moves
+		'''
+		return not self.is_check(colour)	\
+		   and not self.get_all_legal_moves(colour)
+
+##### move functions #####
 
 	def make_move(self, piece, destination):
 		self.set(piece.pos, None)
@@ -112,58 +158,20 @@ class Board:
 	def capture(self): pass			# here
 	def castle(self): pass			# here
 
-	def check_bounds(self, pos):
-		return (0<=pos[0]<self.DIMENSIONS[0]
-		   and  0<=pos[1]<self.DIMENSIONS[1])
-
-	def is_check(self, colour):
-		for row in range(self.DIMENSIONS[0]):
-			for col in range(self.DIMENSIONS[1]):
-				piece = self.tiles[row][col]
-
-				if piece and piece.colour!=colour:
-					all_moves = piece.get_moves(self)
-					for move in all_moves:
-						if self.check_bounds(move):
-							piece = self.get(move)
-							if piece and type(piece)==King and piece.colour==colour:
-								return True
-		return False
-
-	def is_checkmate(self, colour):
-		# checkmate conditions:
-		#  - is currently in check
-		#  - no legal moves
-		return self.is_check(colour)	\
-		   and not self.get_all_legal_moves(colour)
-
-	def is_stalemate(self, colour):
-		# stalemate conditions:
-		#  - is not currently under check
-		#  - no legal moves
-		return not self.is_check(colour)	\
-		   and not self.get_all_legal_moves(colour)
-
 	def get_all_legal_moves(self, colour):
 		all_legal_moves = []
-		for row in range(self.DIMENSIONS[0]):
-			for col in range(self.DIMENSIONS[1]):
-				piece = self.tiles[row][col]
-
-				if piece and piece.colour==colour:
-					for move in piece.get_legal_moves(self):
-						all_legal_moves.append([piece, move])
+		for piece in self.iterate():
+			if piece.colour!=colour: continue
+			for move in piece.get_legal_moves(self):
+				all_legal_moves.append([piece, move])
 
 		return all_legal_moves
 
 	def evaluation(self):
 		_evaluation = 0
-		for row in range(self.DIMENSIONS[0]):
-			for col in range(self.DIMENSIONS[1]):
-				piece = self.tiles[row][col]
-
-				if piece and type(piece)!=King:
-					_evaluation += piece.VALUE * (1 if piece.colour==WHITE else -1)
+		for piece in self.iterate():
+			if type(piece)!=King:
+				_evaluation += piece.VALUE * (1 if piece.colour==WHITE else -1)
 
 		return _evaluation
 
