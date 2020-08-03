@@ -1,5 +1,4 @@
 from board import *
-from piece import *
 
 WHITE = 'white'
 BLACK = 'black'
@@ -16,15 +15,14 @@ class Chess:
 		self.board.display()
 		self.select_piece()
 		self.board.display(self.piece)
-		self.select_move()
-		self.board.make_move(self.piece, self.destination)
+		self.select_move().make()
 		self.player = WHITE if self.player==BLACK else BLACK
 
 	def loop_ai(self):
 		if self.board.is_checkmate(self.player): return
 		all_legal_moves = self.board.get_all_legal_moves(BLACK)
-		piece, move = all_legal_moves[327 % len(all_legal_moves)]
-		self.board.make_move(piece, move)
+		move = all_legal_moves[327 % len(all_legal_moves)]
+		move.make()
 		self.player = WHITE
 
 	def end(self):
@@ -34,22 +32,22 @@ class Chess:
 	def select_piece(self):
 		while True:
 			coord = input('select piece: ')
-			pos = self.board.decode_coord(coord)
+			pos = Board.decode_coord(coord)
 
 			if not pos:
 				print('[invalid coordinate] cannot decode')
 				continue
-			if not self.board.check_bounds(pos):
+			self.piece = self.board.get(pos)
+			if self.piece is False:
 				print('[invalid coordinate] out of bounds')
 				continue
-			self.piece = self.board.get(pos)
-			if not self.piece:
+			if self.piece is None:
 				print('[invalid square] no piece found')
 				continue
 			if self.piece.colour!=self.player:
 				print('[invalid piece] wrong colour')
 				continue
-			self.legal_moves = self.piece.get_legal_moves(self.board)
+			self.legal_moves = self.piece.get_legal_moves()
 			if not self.legal_moves:
 				print('[invalid piece] no legal moves')
 				continue
@@ -59,12 +57,14 @@ class Chess:
 	def select_move(self):
 		while True:
 			coord = input('select move: ')
-			self.destination = self.board.decode_coord(coord)
-			if self.destination in self.legal_moves: return
-			touch = self.board.get(self.destination)
+			destination = Board.decode_coord(coord)
+			if destination in self.legal_moves:
+				_move, *_ = [move for move in self.legal_moves if destination==move]
+				return _move
+			touch = self.board.get(destination)
 			if touch and touch.colour==self.player:
 				self.piece = touch
-				self.legal_moves = self.piece.get_legal_moves(self.board)
+				self.legal_moves = self.piece.get_legal_moves()
 				if not self.legal_moves:
 					print('[invalid piece] no legal moves')
 				else:

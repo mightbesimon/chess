@@ -12,6 +12,9 @@ class Board:
 	def __init__(self, ranks=8, files=8):
 		self.DIMENSIONS = (ranks, files)
 		self.tiles = [ [None]*self.DIMENSIONS[1] for _ in range(self.DIMENSIONS[0]) ]
+		self.captured = {}
+		for _ in [WHITE, BLACK]:
+			self.captured[_] = []
 
 	# def __repr__(self):
 	# 	return self.display()
@@ -19,37 +22,37 @@ class Board:
 	def set_up(self):
 		# for n*8 boards only
 		self.tiles[0] = [
-			Rook  (WHITE, board, (0, 0)),
-			Knight(WHITE, board, (0, 1)),
-			Bishop(WHITE, board, (0, 2)),
-			Queen (WHITE, board, (0, 3)),
-			King  (WHITE, board, (0, 4)),
-			Bishop(WHITE, board, (0, 5)),
-			Knight(WHITE, board, (0, 6)),
-			Rook  (WHITE, board, (0, 7)),
+			Rook  (WHITE, self, (0, 0)),
+			Knight(WHITE, self, (0, 1)),
+			Bishop(WHITE, self, (0, 2)),
+			Queen (WHITE, self, (0, 3)),
+			King  (WHITE, self, (0, 4)),
+			Bishop(WHITE, self, (0, 5)),
+			Knight(WHITE, self, (0, 6)),
+			Rook  (WHITE, self, (0, 7)),
 		]
 		self.tiles[1] = [
-			Pawn(WHITE, board, (1, col))
+			Pawn(WHITE, self, (1, col))
 			for col in range(self.DIMENSIONS[1])
 		]
 
 		self.tiles[self.DIMENSIONS[0]-2] = [
-			Pawn(BLACK, board, (self.DIMENSIONS[0]-2, col))
+			Pawn(BLACK, self, (self.DIMENSIONS[0]-2, col))
 			for col in range(self.DIMENSIONS[1])
 		]
 		self.tiles[self.DIMENSIONS[0]-1] = [
-			Rook  (BLACK, board, (self.DIMENSIONS[0]-1, 0)),
-			Knight(BLACK, board, (self.DIMENSIONS[0]-1, 1)),
-			Bishop(BLACK, board, (self.DIMENSIONS[0]-1, 2)),
-			Queen (BLACK, board, (self.DIMENSIONS[0]-1, 3)),
-			King  (BLACK, board, (self.DIMENSIONS[0]-1, 4)),
-			Bishop(BLACK, board, (self.DIMENSIONS[0]-1, 5)),
-			Knight(BLACK, board, (self.DIMENSIONS[0]-1, 6)),
-			Rook  (BLACK, board, (self.DIMENSIONS[0]-1, 7)),
+			Rook  (BLACK, self, (self.DIMENSIONS[0]-1, 0)),
+			Knight(BLACK, self, (self.DIMENSIONS[0]-1, 1)),
+			Bishop(BLACK, self, (self.DIMENSIONS[0]-1, 2)),
+			Queen (BLACK, self, (self.DIMENSIONS[0]-1, 3)),
+			King  (BLACK, self, (self.DIMENSIONS[0]-1, 4)),
+			Bishop(BLACK, self, (self.DIMENSIONS[0]-1, 5)),
+			Knight(BLACK, self, (self.DIMENSIONS[0]-1, 6)),
+			Rook  (BLACK, self, (self.DIMENSIONS[0]-1, 7)),
 		]
 
 	def display(self, piece=None):
-		legal_moves = piece.get_legal_moves(self) if piece else []
+		legal_moves = piece.get_legal_moves() if piece else []
 		
 		# print('    a   b   c   d   e   f   g   h'  )
 		# print('  ┏━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┓')
@@ -84,19 +87,16 @@ class Board:
 		print('evaluation =', self.evaluation())
 
 		if legal_moves:
-			print(*[ chr(97+move[1])+str(move[0]+1)
+			print(*[ chr(97+move.dst[1])+str(move.dst[0]+1)
 							for move in legal_moves ])
 		elif piece: print('[no moves]')
 
-	def decode_coord(self, coord):
+	def decode_coord(coord):
 		try:
 			if not coord[0].isalpha(): return None
 			return (int(coord[1:])-1, ord(coord[0])-97)
 		except:
 			return None
-
-	# def coords(self, pos):
-	# 	return chr(97+pos[1])+str(pos[0]+1)
 
 	def clone(self):
 		copy = Board()
@@ -104,7 +104,7 @@ class Board:
 		for row in range(self.DIMENSIONS[0]):
 			for col in range(self.DIMENSIONS[1]):
 				piece = self.tiles[row][col]
-				copy.tiles[row][col] = piece.clone() if piece else None
+				copy.tiles[row][col] = piece.clone(copy) if piece else None
 
 		return copy
 
@@ -123,9 +123,6 @@ class Board:
 		   and  0<=pos[1]<self.DIMENSIONS[1])
 
 	def iterate(self):
-		# return [self.tiles[row][col] for row in range(self.DIMENSIONS[0])
-		# 							for col in range(self.DIMENSIONS[1])
-		# 							if self.tiles[row][col]]
 		return [piece for row in self.tiles
 						for piece in row if piece]
 
@@ -136,10 +133,9 @@ class Board:
 		# since player is under check if there is any move
 		for piece in self.iterate():
 			if piece.colour==colour: continue
-			for move in piece.get_moves(self):
-				piece = self.get(move)
-				if (piece and type(piece)==King
-						and piece.colour==colour):
+			for move in piece.get_moves():
+				_piece = self.get(move.dst)
+				if type(_piece)==King and _piece.colour==colour:
 					return True
 		return False
 
@@ -159,23 +155,13 @@ class Board:
 		return not self.is_check(colour)	\
 		   and not self.get_all_legal_moves(colour)
 
-##### move functions #####
-
-	def make_move(self, piece, destination):
-		self.set(piece.pos, None)
-		self.set(destination, piece)
-		piece.pos = destination
-		piece.moved += 1
-
-	def capture(self): pass			# here
-	def castle(self): pass			# here
+##### eval functions #####
 
 	def get_all_legal_moves(self, colour):
 		all_legal_moves = []
 		for piece in self.iterate():
 			if piece.colour!=colour: continue
-			for move in piece.get_legal_moves(self):
-				all_legal_moves.append([piece, move])
+			all_legal_moves.extend(piece.get_legal_moves())
 
 		return all_legal_moves
 
@@ -186,8 +172,4 @@ class Board:
 				_evaluation += piece.VALUE * (1 if piece.colour==WHITE else -1)
 
 		return _evaluation
-
-	def make_notation(self, piece, destination): pass
-		# Qxd4
-		# return f'{piece.NOTE}{'x' if self.get(destination) else ''}{destination[1]}{destination[0]+1}'
 

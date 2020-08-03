@@ -1,65 +1,72 @@
+from move  import *
+
 WHITE = 'white'
 BLACK = 'black'
 
 
+cardinal_offsets = [		#	┏━━━┳━━━┳━━━┓
+	[-1,  0], [ 0, -1],		#	┃   ┃ ✕ ┃   ┃	[ 1,  0], [ 0,  1]
+	[ 1,  0], [ 0,  1],		#	┣━━━╋━━━╋━━━┫
+]							#	┃ ✕ ┃ ♜ ┃ ✕ ┃
+							#	┣━━━╋━━━╋━━━┫
+							#	┃   ┃ ✕ ┃   ┃	[-1,  0], [ 0, -1]
+							#	┗━━━┻━━━┻━━━┛
+
+diagonal_offsets = [		#	┏━━━┳━━━┳━━━┓
+	[-1, -1], [-1,  1],		#	┃ ✕ ┃   ┃ ✕ ┃	[ 1, -1], [ 1,  1]
+	[ 1, -1], [ 1,  1],		#	┣━━━╋━━━╋━━━┫
+]							#	┃   ┃ ♝ ┃   ┃
+							#	┣━━━╋━━━╋━━━┫
+							#	┃ ✕ ┃   ┃ ✕ ┃	[-1, -1], [-1,  1]
+							#	┗━━━┻━━━┻━━━┛
+
+knight_offsets = [			#	┏━━━┳━━━┳━━━┳━━━┳━━━┓
+	[-2, -1], [-2,  1],		#	┃   ┃ ✕ ┃   ┃ ✕ ┃   ┃	[ 2, -1], [ 2,  1]
+	[-1, -2], [-1,  2],		#	┣━━━╋━━━╋━━━╋━━━╋━━━┫
+	[ 1, -2], [ 1,  2],		#	┃ ✕ ┃   ┃   ┃   ┃ ✕ ┃	[ 1, -2], [ 1,  2]
+	[ 2, -1], [ 2,  1],		#	┣━━━╋━━━╋━━━╋━━━╋━━━┫
+]							#	┃   ┃   ┃ ♞ ┃   ┃   ┃
+							#	┣━━━╋━━━╋━━━╋━━━╋━━━┫
+							#	┃ ✕ ┃   ┃   ┃   ┃ ✕ ┃	[-1, -2], [-1,  2]
+							#	┣━━━╋━━━╋━━━╋━━━╋━━━┫
+							#	┃   ┃ ✕ ┃   ┃ ✕ ┃   ┃	[-2, -1], [-2,  1]
+							#	┗━━━┻━━━┻━━━┻━━━┻━━━┛
+
 class Piece:
 
-	def __init__(self, colour, pos):
+	def __init__(self, colour, board, pos):
 		self.colour	= colour
+		self.board  = board
 		self.pos	= pos
 		self.moved	= 0
-		# self.rank, self.file = pos
 
 	def __repr__(self):
 		return (self.FIG[0] if self.colour==WHITE
 		  else  self.FIG[1])
 
-	def clone(self):
-		return type(self)(self.colour, self.pos)
+	def clone(self, board):
+		return type(self)(self.colour, board, self.pos[:])
 								# clone a piece of the same type
 								# same colour and position
 								# this is for Board.clone()
 
-	def crawl(self, board, offsets):
+	def crawl(self, offsets):
 		moves = []
 		for row, col in offsets:
-			r = self.pos[0]+row
-			c = self.pos[1]+col
+			increment = (self.pos[0]+row, self.pos[1]+col)
 
-			while (board.check_bounds([r, c])
-					and board.tiles[r][c] is None):
-				moves.append((r, c))
-				r += row
-				c += col
+			while self.board.get(increment) is None:
+				moves.append(Move(self, destination=increment))
+				increment = (increment[0]+row, increment[1]+col)
 
-			moves.append((r, c))
+			moves.append(Move(self, destination=increment))
 
 		return moves
 
-	def is_legal(self, board, move):
-		'''	legal conditions:
-			 - within bounds
-			 - not land on same colour
-			 - will not be under check
-		'''
-		# return (board.check_bounds(move)
-		# 	and (board.get(move).colour!=self.colour
-		# 			if board.get(move) else True)
-		# 	and not board.is_check(self.colour))	# this is wrong and needs fixing
-		if (board.check_bounds(move)
-				and (board.get(move).colour!=self.colour
-			 			if board.get(move) else True)):
-			copy = board.clone()
-			copy.make_move(copy.get(self.pos), move)
-			if not copy.is_check(self.colour): return True
-
-		return False
-
-	def get_legal_moves(self, board):
-		# legal moves
-		# = all moves that are legal
-		return [ move for move in self.get_moves(board)
-				if self.is_legal(board, move) ]
+	def get_legal_moves(self):
+		# all moves that are legal
+		return [ move for move in self.get_moves()
+				if move.is_legal() ]
 
 
 
@@ -71,21 +78,15 @@ class King(Piece):
 	NOTE	= 'K'
 	FIG		= '♔♚'
 
-	def get_moves(self, board):
-		cardinal_offsets = [
-			[-1,  0], [ 0, -1],
-			[ 1,  0], [ 0,  1],
-		]
-		diagonal_offsets = [
-			[-1, -1], [-1,  1],
-			[ 1, -1], [ 1,  1],
-		]
+	def get_moves(self):
+		all_moves = [Move(self, offset=offset)
+				for offset in cardinal_offsets
+				             +diagonal_offsets]
 
-		# CASTLING!!!!
-
-		return [(self.pos[0]+row, self.pos[1]+col)		##pos##
-							for row, col in cardinal_offsets
-							               +diagonal_offsets]
+		# CASTLING!!!
+		# if not self.moved
+		# all_moves.append
+		return all_moves
 
 class Pawn(Piece):
 
@@ -94,7 +95,7 @@ class Pawn(Piece):
 	FIG		= '♙♟'
 	VALUE	= 1
 
-	def get_moves(self, board):
+	def get_moves(self):
 		offset = 1 if self.colour==WHITE else -1
 		all_moves = []
 		'''
@@ -108,15 +109,12 @@ class Pawn(Piece):
 			┗━━━┻━━━┻━━━┛
 		'''
 		advance = (self.pos[0]+offset, self.pos[1])
-		if (board.check_bounds(advance)
-				and not board.get(advance)):
-			all_moves.append(advance)
+		if self.board.get(advance) is None:
+			all_moves.append(Move(self, destination=advance))
 
 			advance_two = (self.pos[0] + offset*2, self.pos[1])
-			if (board.check_bounds(advance_two)
-					and not self.moved
-					and not board.get(advance_two)):
-				all_moves.append(advance_two)
+			if not self.moved and self.board.get(advance_two) is None:
+				all_moves.append(Move(self, destination=advance_two))
 		'''
 		capture
 			┏━━━┳━━━┳━━━┓
@@ -129,10 +127,9 @@ class Pawn(Piece):
 		'''
 		for offset_col in [-1, 1]:
 			capture = (self.pos[0]+offset, self.pos[1]+offset_col)
-			if (board.check_bounds(capture)
-					and  board.get(capture)
-					and  board.get(capture).colour!=self.colour):
-				all_moves.append(capture)
+			_piece = self.board.get(capture)
+			if _piece and _piece.colour!=self.colour:
+				all_moves.append(Move(self, destination=capture))
 		'''
 		en passant
 			┏━━━┳━━━┳━━━┓
@@ -156,28 +153,9 @@ class Knight(Piece):
 	FIG		= '♘♞'
 	VALUE	= 3
 
-	def get_moves(self, board):
-		'''	┏━━━┳━━━┳━━━┳━━━┳━━━┓
-			┃   ┃ ✕ ┃   ┃ ✕ ┃   ┃	[ 2, -1], [ 2,  1]
-			┣━━━╋━━━╋━━━╋━━━╋━━━┫
-			┃ ✕ ┃   ┃   ┃   ┃ ✕ ┃	[ 1, -2], [ 1,  2]
-			┣━━━╋━━━╋━━━╋━━━╋━━━┫
-			┃   ┃   ┃ ♞ ┃   ┃   ┃
-			┣━━━╋━━━╋━━━╋━━━╋━━━┫
-			┃ ✕ ┃   ┃   ┃   ┃ ✕ ┃	[-1, -2], [-1,  2]
-			┣━━━╋━━━╋━━━╋━━━╋━━━┫
-			┃   ┃ ✕ ┃   ┃ ✕ ┃   ┃	[-2, -1], [-2,  1]
-			┗━━━┻━━━┻━━━┻━━━┻━━━┛
-		'''
-		offsets = [
-			[-2, -1], [-2,  1],
-			[-1, -2], [-1,  2],
-			[ 1, -2], [ 1,  2],
-			[ 2, -1], [ 2,  1],
-		]
-
-		return [(self.pos[0]+row, self.pos[1]+col)
-							for row, col in offsets]
+	def get_moves(self):
+		return [Move(self, offset=offset)
+					for offset in knight_offsets]
 
 
 class Bishop(Piece):
@@ -187,12 +165,8 @@ class Bishop(Piece):
 	FIG		= '♗♝'
 	VALUE	= 3
 
-	def get_moves(self, board):
-		diagonal_offsets = [
-			[-1, -1], [-1,  1],
-			[ 1, -1], [ 1,  1],
-		]
-		return self.crawl(board, diagonal_offsets)
+	def get_moves(self):
+		return self.crawl(diagonal_offsets)
 
 class Rook(Piece):
 
@@ -201,12 +175,8 @@ class Rook(Piece):
 	FIG		= '♖♜'
 	VALUE	= 5
 
-	def get_moves(self, board):
-		cardinal_offsets = [
-			[-1,  0], [ 0, -1],
-			[ 1,  0], [ 0,  1],
-		]
-		return self.crawl(board, cardinal_offsets)
+	def get_moves(self):
+		return self.crawl(cardinal_offsets)
 
 class Queen(Piece):
 
@@ -215,16 +185,8 @@ class Queen(Piece):
 	FIG		= '♕♛'
 	VALUE	= 9
 
-	def get_moves(self, board):
-		cardinal_offsets = [
-			[-1,  0], [ 0, -1],
-			[ 1,  0], [ 0,  1],
-		]
-		diagonal_offsets = [
-			[-1, -1], [-1,  1],
-			[ 1, -1], [ 1,  1],
-		]
-		return self.crawl(board, cardinal_offsets
-								+diagonal_offsets)
+	def get_moves(self):
+		return self.crawl(cardinal_offsets
+						 +diagonal_offsets)
 
 

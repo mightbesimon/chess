@@ -43,21 +43,24 @@ board.display()
 # board.set_up()
 # board.display()
 
-print(board.iterate())
+# print(board.iterate())
 
-piece = board.get((0, 0))
-print('piece', piece, piece.pos)
-copy = piece.clone()
-copy.pos = (4, 4)
-print('piece', piece, piece.pos)
-print('clone', copy, copy.pos)
+# piece = board.get((0, 0))
+# print('piece', piece, piece.pos)
+# copy = piece.clone()
+# copy.pos = (4, 4)
+# print('piece', piece, piece.pos)
+# print('clone', copy, copy.pos)
 
-copy = board.clone()
-copy.make_move(copy.tiles[0][1], (2, 2))
-board.display()
-copy.display()
-print(board)
-print(copy)
+# copy = board.clone()
+# copy.make_move(copy.tiles[0][1], (2, 2))
+# board.display()
+# copy.display()
+# print(board)
+# print(copy)
 
+
+piece = board.tiles[0][4]
+print(piece.get_legal_moves())
 
 
