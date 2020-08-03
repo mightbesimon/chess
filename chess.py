@@ -5,74 +5,74 @@ WHITE = 'white'
 BLACK = 'black'
 
 
-def main():
-	player = WHITE
-	board  = Board()
-	board.set_up()
+class Chess:
 
-	while not board.is_checkmate(player):
+	def __init__(self):
+		self.player = WHITE
+		self.board  = Board()
+		self.board.set_up()
 
-		board.display()
+	def loop(self):
+		self.board.display()
+		self.select_piece()
+		self.board.display(self.piece)
+		self.select_move()
+		self.board.make_move(self.piece, self.destination)
+		self.player = WHITE if self.player==BLACK else BLACK
 
+		# AI move
+		if self.board.is_checkmate(self.player): return
+		all_legal_moves = self.board.get_all_legal_moves(BLACK)
+		piece, move = all_legal_moves[327 % len(all_legal_moves)]
+		self.board.make_move(piece, move)
+		self.player = WHITE
+
+	def end(self):
+		self.board.display()
+		print(self.player, 'checkmate')
+
+	def select_piece(self):
 		while True:
 			coord = input('select piece: ')
-			pos = board.decode_coord(coord)
+			pos = self.board.decode_coord(coord)
 
 			if not pos:
 				print('[invalid coordinate] cannot decode')
 				continue
-			if not board.check_bounds(pos):
+			if not self.board.check_bounds(pos):
 				print('[invalid coordinate] out of bounds')
 				continue
-			piece = board.get(pos)
-			if not piece:
+			self.piece = self.board.get(pos)
+			if not self.piece:
 				print('[invalid square] no piece found')
 				continue
-			if piece.colour!=player:
+			if self.piece.colour!=self.player:
 				print('[invalid piece] wrong colour')
 				continue
-			legal_moves = piece.get_legal_moves(board)
-			if not legal_moves:
+			self.legal_moves = self.piece.get_legal_moves(self.board)
+			if not self.legal_moves:
 				print('[invalid piece] no legal moves')
 				continue
 
-			break
+			return
 
-		board.display(piece)
-
+	def select_move(self):
 		while True:
 			coord = input('select move: ')
-			destination = board.decode_coord(coord)
-			if destination in legal_moves: break
+			self.destination = self.board.decode_coord(coord)
+			if self.destination in self.legal_moves: return
+			temp = self.board.get(self.destination)
 
-		board.make_move(piece, destination)
-		player = WHITE if player==BLACK else BLACK
+	def main():
+		chess = Chess()
 
+		while True:
+			chess.loop()
+			if chess.board.is_checkmate(chess.player): break
 
-
-		#==== black AI ====#
-		if board.is_checkmate(player): break
-		# flag1 = False
-		# for row in range(board.DIMENSIONS[0]):
-		# 	for col in range(board.DIMENSIONS[1]):
-		# 		piece = board.tiles[row][col]
-		# 		if piece and piece.colour==BLACK:
-		# 			legal_moves = piece.get_legal_moves(board)
-		# 			if not legal_moves: continue
-		# 			board.make_move(piece, legal_moves[0])
-		# 			flag1 = True
-		# 			break
-		# 	if flag1: break
-		all_legal_moves = board.get_all_legal_moves(BLACK)
-		piece, move = all_legal_moves[327 % len(all_legal_moves)]
-		board.make_move(piece, move)
-		player = WHITE
-
-	board.display()
-	print(player, 'checkmate')
+		chess.end()
 
 
-
-if __name__ == '__main__': main()
+if __name__ == '__main__': Chess.main()
 
 
