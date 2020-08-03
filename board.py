@@ -59,7 +59,7 @@ class Board:
 		for row in range(self.DIMENSIONS[0])[::-1]:
 			print((row+1) % 10, '┃', end='')
 			for col in range(self.DIMENSIONS[1]):
-				if [row, col] in legal_moves:
+				if (row, col) in legal_moves:
 					if self.tiles[row][col]:
 						print(f'>{self.tiles[row][col]}<', end='')
 					else:
@@ -83,15 +83,15 @@ class Board:
 
 		print('evaluation =', self.evaluation())
 
-		if piece and legal_moves:
+		if legal_moves:
 			print(*[ chr(97+move[1])+str(move[0]+1)
 							for move in legal_moves ])
-		if piece and not legal_moves: print('[no moves]')
+		elif piece: print('[no moves]')
 
 	def decode_coord(self, coord):
 		try:
 			if not coord[0].isalpha(): return None
-			return [int(coord[1:])-1, ord(coord[0])-97]
+			return (int(coord[1:])-1, ord(coord[0])-97)
 		except:
 			return None
 
@@ -100,7 +100,7 @@ class Board:
 
 	def clone(self):
 		copy = Board()
-		copy.DIMENSIONS = self.DIMENSIONS
+		copy.DIMENSIONS = self.DIMENSIONS[:]
 		for row in range(self.DIMENSIONS[0]):
 			for col in range(self.DIMENSIONS[1]):
 				piece = self.tiles[row][col]

@@ -28,7 +28,7 @@ class Piece:
 
 			while (board.check_bounds([r, c])
 					and board.tiles[r][c] is None):
-				moves.append([r, c])
+				moves.append((r, c))
 				r += row
 				c += col
 
