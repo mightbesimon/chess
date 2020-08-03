@@ -10,29 +10,29 @@ from piece import *
 
 def set_up_6x6(board):
 	board.tiles[0] = [
-		Rook  (WHITE, [0, 0]),
-		Knight(WHITE, [0, 1]),
-		Queen (WHITE, [0, 2]),
-		King  (WHITE, [0, 3]),
-		Knight(WHITE, [0, 4]),
-		Rook  (WHITE, [0, 5]),
+		Rook  (WHITE, board, (0, 0)),
+		Knight(WHITE, board, (0, 1)),
+		Queen (WHITE, board, (0, 2)),
+		King  (WHITE, board, (0, 3)),
+		Knight(WHITE, board, (0, 4)),
+		Rook  (WHITE, board, (0, 5)),
 	]
 	board.tiles[1] = [
-		Pawn(WHITE, [1, col])
+		Pawn(WHITE, board, (1, col))
 		for col in range(6)
 	]
 
 	board.tiles[board.DIMENSIONS[0]-2] = [
-		Pawn(BLACK, [4, col])
+		Pawn(BLACK, board, (4, col))
 		for col in range(6)
 	]
 	board.tiles[board.DIMENSIONS[0]-1] = [
-		Rook  (BLACK, [5, 0]),
-		Knight(BLACK, [5, 1]),
-		Queen (BLACK, [5, 2]),
-		King  (BLACK, [5, 3]),
-		Knight(BLACK, [5, 4]),
-		Rook  (BLACK, [5, 5]),
+		Rook  (BLACK, board, (5, 0)),
+		Knight(BLACK, board, (5, 1)),
+		Queen (BLACK, board, (5, 2)),
+		King  (BLACK, board, (5, 3)),
+		Knight(BLACK, board, (5, 4)),
+		Rook  (BLACK, board, (5, 5)),
 	]
 
 board = Board(8, 6)

@@ -19,33 +19,33 @@ class Board:
 	def set_up(self):
 		# for n*8 boards only
 		self.tiles[0] = [
-			Rook  (WHITE, [0, 0]),
-			Knight(WHITE, [0, 1]),
-			Bishop(WHITE, [0, 2]),
-			Queen (WHITE, [0, 3]),
-			King  (WHITE, [0, 4]),
-			Bishop(WHITE, [0, 5]),
-			Knight(WHITE, [0, 6]),
-			Rook  (WHITE, [0, 7]),
+			Rook  (WHITE, board, (0, 0)),
+			Knight(WHITE, board, (0, 1)),
+			Bishop(WHITE, board, (0, 2)),
+			Queen (WHITE, board, (0, 3)),
+			King  (WHITE, board, (0, 4)),
+			Bishop(WHITE, board, (0, 5)),
+			Knight(WHITE, board, (0, 6)),
+			Rook  (WHITE, board, (0, 7)),
 		]
 		self.tiles[1] = [
-			Pawn(WHITE, [1, col])
+			Pawn(WHITE, board, (1, col))
 			for col in range(self.DIMENSIONS[1])
 		]
 
 		self.tiles[self.DIMENSIONS[0]-2] = [
-			Pawn(BLACK, [self.DIMENSIONS[0]-2, col])
+			Pawn(BLACK, board, (self.DIMENSIONS[0]-2, col))
 			for col in range(self.DIMENSIONS[1])
 		]
 		self.tiles[self.DIMENSIONS[0]-1] = [
-			Rook  (BLACK, [self.DIMENSIONS[0]-1, 0]),
-			Knight(BLACK, [self.DIMENSIONS[0]-1, 1]),
-			Bishop(BLACK, [self.DIMENSIONS[0]-1, 2]),
-			Queen (BLACK, [self.DIMENSIONS[0]-1, 3]),
-			King  (BLACK, [self.DIMENSIONS[0]-1, 4]),
-			Bishop(BLACK, [self.DIMENSIONS[0]-1, 5]),
-			Knight(BLACK, [self.DIMENSIONS[0]-1, 6]),
-			Rook  (BLACK, [self.DIMENSIONS[0]-1, 7]),
+			Rook  (BLACK, board, (self.DIMENSIONS[0]-1, 0)),
+			Knight(BLACK, board, (self.DIMENSIONS[0]-1, 1)),
+			Bishop(BLACK, board, (self.DIMENSIONS[0]-1, 2)),
+			Queen (BLACK, board, (self.DIMENSIONS[0]-1, 3)),
+			King  (BLACK, board, (self.DIMENSIONS[0]-1, 4)),
+			Bishop(BLACK, board, (self.DIMENSIONS[0]-1, 5)),
+			Knight(BLACK, board, (self.DIMENSIONS[0]-1, 6)),
+			Rook  (BLACK, board, (self.DIMENSIONS[0]-1, 7)),
 		]
 
 	def display(self, piece=None):
