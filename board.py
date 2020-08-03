@@ -98,6 +98,16 @@ class Board:
 	# def coords(self, pos):
 	# 	return chr(97+pos[1])+str(pos[0]+1)
 
+	def clone(self):
+		copy = Board()
+		copy.DIMENSIONS = self.DIMENSIONS
+		for row in range(self.DIMENSIONS[0]):
+			for col in range(self.DIMENSIONS[1]):
+				piece = self.tiles[row][col]
+				copy.tiles[row][col] = piece.clone() if piece else None
+
+		return copy
+
 ##### ^ initialise, setup || input/output ^ #####
 ##### condition functions #####
 
@@ -113,9 +123,11 @@ class Board:
 		   and  0<=pos[1]<self.DIMENSIONS[1])
 
 	def iterate(self):
-		return [self.tiles[row][col] for row in range(self.DIMENSIONS[0])
-									for col in range(self.DIMENSIONS[1])
-									if self.tiles[row][col]]
+		# return [self.tiles[row][col] for row in range(self.DIMENSIONS[0])
+		# 							for col in range(self.DIMENSIONS[1])
+		# 							if self.tiles[row][col]]
+		return [piece for row in self.tiles
+						for piece in row if piece]
 
 	def is_check(self, colour):
 		# check to see if opponent can make

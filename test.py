@@ -35,12 +35,29 @@ def set_up_6x6(board):
 		Rook  (BLACK, [5, 5]),
 	]
 
-# board = Board([8 ,6])
-# set_up_6x6(board)
+board = Board(8, 6)
+set_up_6x6(board)
+board.display()
+
+# board = Board(16, 8)
+# board.set_up()
 # board.display()
 
-board = Board(16, 8)
-board.set_up()
+print(board.iterate())
+
+piece = board.get((0, 0))
+print('piece', piece, piece.pos)
+copy = piece.clone()
+copy.pos = (4, 4)
+print('piece', piece, piece.pos)
+print('clone', copy, copy.pos)
+
+copy = board.clone()
+copy.make_move(copy.tiles[0][1], (2, 2))
 board.display()
+copy.display()
+print(board)
+print(copy)
+
 
 

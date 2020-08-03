@@ -14,6 +14,12 @@ class Piece:
 		return (self.FIG[0] if self.colour==WHITE
 		  else  self.FIG[1])
 
+	def clone(self):
+		return type(self)(self.colour, self.pos)
+								# clone a piece of the same type
+								# same colour and position
+								# this is for Board.clone()
+
 	def crawl(self, board, offsets):
 		moves = []
 		for row, col in offsets:
@@ -31,12 +37,19 @@ class Piece:
 		return moves
 
 	def is_legal(self, board, move):
+		'''	legal conditions:
+			 - within bounds
+			 - not land on same colour
+			 - will not be under check
+		'''
 		return (board.check_bounds(move)
 			and (board.get(move).colour!=self.colour
 					if board.get(move) else True)
 			and not board.is_check(self.colour))	# this is wrong and needs fixing
 
 	def get_legal_moves(self, board):
+		# legal moves
+		# = all moves that are legal
 		return [ move for move in self.get_moves(board)
 				if self.is_legal(board, move) ]
 
