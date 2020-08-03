@@ -12,7 +12,7 @@ class Chess:
 		self.board  = Board()
 		self.board.set_up()
 
-	def loop(self):
+	def loop_player(self):
 		self.board.display()
 		self.select_piece()
 		self.board.display(self.piece)
@@ -20,7 +20,7 @@ class Chess:
 		self.board.make_move(self.piece, self.destination)
 		self.player = WHITE if self.player==BLACK else BLACK
 
-		# AI move
+	def loop_ai(self):
 		if self.board.is_checkmate(self.player): return
 		all_legal_moves = self.board.get_all_legal_moves(BLACK)
 		piece, move = all_legal_moves[327 % len(all_legal_moves)]
@@ -61,13 +61,23 @@ class Chess:
 			coord = input('select move: ')
 			self.destination = self.board.decode_coord(coord)
 			if self.destination in self.legal_moves: return
-			temp = self.board.get(self.destination)
+			touch = self.board.get(self.destination)
+			if touch and touch.colour==self.player:
+				self.piece = touch
+				self.legal_moves = self.piece.get_legal_moves(self.board)
+				if not self.legal_moves:
+					print('[invalid piece] no legal moves')
+				else:
+					self.board.display(self.piece)
+
 
 	def main():
 		chess = Chess()
 
 		while True:
-			chess.loop()
+			chess.loop_player()
+			if chess.board.is_checkmate(chess.player): break
+			chess.loop_ai()
 			if chess.board.is_checkmate(chess.player): break
 
 		chess.end()
