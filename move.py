@@ -8,7 +8,7 @@ class Move:
 					en_passant=False, castling=False, promotion=None):
 		self.board = piece.board
 		self.piece = piece
-		self.src   = piece.pos
+		self.src   = piece.pos #origin
 		self.dst   = (destination if destination else
 						(self.src[0]+offset[0],
 						 self.src[1]+offset[1]))

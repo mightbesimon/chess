@@ -1,0 +1,21 @@
+
+
+
+store all the legal moves
+(where? piece class?)
+so it does not have to be calculated over and over
+
+
+
+
+update_legal_moves:
+	self.legal_moves = self.get_legal_moves()
+
+piece.update_legal_moves()
+piece.legal_moves
+
+update_all_legal_moves(player):
+	self.all_legal_moves[player] = self.get_all_legal_moves(player)
+
+board.update_all_legal_moves(player)
+board.all_legal_moves[player]

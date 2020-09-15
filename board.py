@@ -53,7 +53,7 @@ class Board:
 
 	def display(self, piece=None):
 		legal_moves = piece.get_legal_moves() if piece else []
-		
+
 		# print('    a   b   c   d   e   f   g   h'  )
 		# print('  ┏━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┓')
 		print('    '+'   '.join([chr(97+n) for n in range(self.DIMENSIONS[1])]))
@@ -168,8 +168,8 @@ class Board:
 	def evaluation(self):
 		_evaluation = 0
 		for piece in self.iterate():
-			if type(piece)!=King:
-				_evaluation += piece.VALUE * (1 if piece.colour==WHITE else -1)
+			if type(piece)==King: continue
+			_evaluation += piece.VALUE * (1 if piece.colour==WHITE else -1)
 
 		return _evaluation
 

@@ -140,7 +140,7 @@ class Pawn(Piece):
 			┃ ♟ ┃ ♙ ┃   ┃
 			┗━━━┻━━━┻━━━┛
 		'''
-		# all_moves.append()
+		# all_moves.append(Move().en_passant())
 		'''
 		promotion
 		'''
@@ -156,7 +156,6 @@ class Knight(Piece):
 	def get_moves(self):
 		return [Move(self, offset=offset)
 					for offset in knight_offsets]
-
 
 class Bishop(Piece):
 
