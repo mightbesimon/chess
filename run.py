@@ -64,10 +64,15 @@ class Frame(tkinter.Tk):
 
 		if piece and piece.colour=='white': 
 			print(' <Piece>', piece, piece.pos)
-			self.render_moves(piece.get_legal_moves())
+			self.piece_moves = piece.get_legal_moves()
+			self.render_moves(self.piece_moves)
 			self.selected = piece
-		elif self.selected and (row, col) in self.selected.get_legal_moves():
+		elif self.selected and (row, col) in self.piece_moves:
 			print(' <Move>', self.selected, (row, col))
+			move, *_ = [m for m in self.piece_moves if (row, col)==m]
+			move.make()
+			self.update()
+			# make AI move
 		else:
 			self.selected = None
 
