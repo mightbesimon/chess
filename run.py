@@ -66,12 +66,10 @@ class Frame(tkinter.Tk):
 			print(' <Piece>', piece, piece.pos)
 			self.render_moves(piece.get_legal_moves())
 			self.selected = piece
-		else:
-			self.selected = None # issue
-
-		print(self.selected, (row, col))
-		if self.selected and (row, col) in self.selected.get_legal_moves():
+		elif self.selected and (row, col) in self.selected.get_legal_moves():
 			print(' <Move>', self.selected, (row, col))
+		else:
+			self.selected = None
 
 
 	def render_board(self, tile_dark=TILE_DARK,
