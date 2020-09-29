@@ -1,4 +1,3 @@
-from chess import *
 from piece import *
 
 
