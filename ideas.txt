@@ -1,12 +1,29 @@
+undos
+record moves
+notations
+
+states (select) (animation, over)
+animations
+
+console log
+log.command()
+log.evaluation()
+
+menu
+
+screensize
+min = screen/2
+max = screen
+
+board object
+
+read board for txt file
 
 
-
+==== older ====
 store all the legal moves
 (where? piece class?)
 so it does not have to be calculated over and over
-
-
-
 
 update_legal_moves:
 	self.legal_moves = self.get_legal_moves()

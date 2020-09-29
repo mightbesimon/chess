@@ -55,7 +55,7 @@ class Piece:
 		for row, col in offsets:
 			increment = (self.pos[0]+row, self.pos[1]+col)
 
-			while self.board.get(increment) is None:
+			while self.board[increment] is None:
 				moves.append(Move(self, destination=increment))
 				increment = (increment[0]+row, increment[1]+col)
 
@@ -95,6 +95,9 @@ class Pawn(Piece):
 	FIG		= '♙♟'
 	VALUE	= 1
 
+	def promote(self):
+		pass
+
 	def get_moves(self):
 		offset = 1 if self.colour==WHITE else -1
 		all_moves = []
@@ -109,11 +112,11 @@ class Pawn(Piece):
 			┗━━━┻━━━┻━━━┛
 		'''
 		advance = (self.pos[0]+offset, self.pos[1])
-		if self.board.get(advance) is None:
+		if self.board[advance] is None:
 			all_moves.append(Move(self, destination=advance))
 
 			advance_two = (self.pos[0] + offset*2, self.pos[1])
-			if not self.moved and self.board.get(advance_two) is None:
+			if not self.moved and self.board[advance_two] is None:
 				all_moves.append(Move(self, destination=advance_two))
 		'''
 		capture
@@ -127,8 +130,9 @@ class Pawn(Piece):
 		'''
 		for offset_col in [-1, 1]:
 			capture = (self.pos[0]+offset, self.pos[1]+offset_col)
-			_piece = self.board.get(capture)
-			if _piece and _piece.colour!=self.colour:
+			_piece = self.board[capture]
+			if not _piece: continue
+			if _piece.colour!=self.colour:
 				all_moves.append(Move(self, destination=capture))
 		'''
 		en passant
