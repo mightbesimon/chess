@@ -3,7 +3,7 @@ from piece import *
 
 class Move:
 
-	def __init__(self, piece, destination=False, offset=False,
+	def __init__(self, piece, destination=None, offset=None,
 					en_passant=False, castling=False, promotion=None):
 		self.board = piece.board
 		self.piece = piece

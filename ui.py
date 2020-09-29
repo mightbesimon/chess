@@ -161,6 +161,5 @@ class Frame(tkinter.Tk):
 
 
 if __name__ == '__main__':
-	frame = Frame()
-	frame.mainloop()
+	Frame().mainloop()
 

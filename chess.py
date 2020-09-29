@@ -1,5 +1,5 @@
 from piece import *
-from board import Board
+from board import *
 
 WHITE = 'white'
 BLACK = 'black'

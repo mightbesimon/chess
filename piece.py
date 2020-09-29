@@ -1,4 +1,4 @@
-from move  import *
+from move import *
 
 WHITE = 'white'
 BLACK = 'black'

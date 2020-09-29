@@ -1,8 +1,5 @@
 from piece import *
 
-WHITE = 'white'
-BLACK = 'black'
-
 
 class Board:
 
