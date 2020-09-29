@@ -1,66 +1,129 @@
-from board import *
-from piece import *
+from board import Board
 
 
-# board = Board()
-# board.set_up()
-# board.make_move(board.tiles[0][1], [2, 2])
-# board.make_move(board.tiles[1][3], [2, 3])
-# board.display(board.tiles[2][3])
+class Test:
 
-def set_up_6x6(board):
-	board.tiles[0] = [
-		Rook  (WHITE, board, (0, 0)),
-		Knight(WHITE, board, (0, 1)),
-		Queen (WHITE, board, (0, 2)),
-		King  (WHITE, board, (0, 3)),
-		Knight(WHITE, board, (0, 4)),
-		Rook  (WHITE, board, (0, 5)),
-	]
-	board.tiles[1] = [
-		Pawn(WHITE, board, (1, col))
-		for col in range(6)
-	]
+	passed   = 0
+	senarios = 0
+	errors   = []
 
-	board.tiles[board.DIMENSIONS[0]-2] = [
-		Pawn(BLACK, board, (4, col))
-		for col in range(6)
-	]
-	board.tiles[board.DIMENSIONS[0]-1] = [
-		Rook  (BLACK, board, (5, 0)),
-		Knight(BLACK, board, (5, 1)),
-		Queen (BLACK, board, (5, 2)),
-		King  (BLACK, board, (5, 3)),
-		Knight(BLACK, board, (5, 4)),
-		Rook  (BLACK, board, (5, 5)),
-	]
+	def verify(self, actual, expected, code):
+		self.senarios += 1
+		if actual==expected:
+			self.passed += 1
+		else:
+			self.errors.append(f'{code}: actual={actual} | expected={expected}')
+			print(actual, expected, actual==expected, '♕'=='♕')
 
-board = Board(8, 6)
-set_up_6x6(board)
-board.display()
-
-# board = Board(16, 8)
-# board.set_up()
-# board.display()
-
-# print(board.iterate())
-
-# piece = board.get((0, 0))
-# print('piece', piece, piece.pos)
-# copy = piece.clone()
-# copy.pos = (4, 4)
-# print('piece', piece, piece.pos)
-# print('clone', copy, copy.pos)
-
-# copy = board.clone()
-# copy.make_move(copy.tiles[0][1], (2, 2))
-# board.display()
-# copy.display()
-# print(board)
-# print(copy)
+	def log(self, feature='untitled'):
+		f = f'Feature {feature}'
+		fill = " "*(20-len(f))
+		print(f'{f}{fill}{self.passed}/{self.senarios} Senarios passed')
+		for idx, error in enumerate(self.errors):
+			print(f'{idx+1}) {error}')
+		self.passed = 0
+		self.senarios = 0
+		self.errors.clear()
 
 
-piece = board.tiles[0][4]
-print(piece.get_legal_moves())
+class TestBoard(Test):
+
+	def test_init(self):
+		# When
+		board1 = Board()
+		board2 = Board(12, 8)
+		# Then
+		self.verify(
+			actual=board1.dim,
+			expected=(8, 8),
+			code='board1.dim'
+		)
+		self.verify(
+			actual=board2.dim,
+			expected=(12, 8),
+			code='board2.dim'
+		)
+		self.log('__init__')
+		return board1, board2
+
+	def test_set_up(self):
+		# Given
+		board1, board2 = self.test_init()
+		# When
+		board1.set_up()
+		board2.set_up()
+		# Then
+		self.verify(
+			actual=board1._repr_small(),
+			expected='♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜\n'
+			         '♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟\n'
+			         '. . . . . . . .\n'
+			         '. . . . . . . .\n'
+			         '. . . . . . . .\n'
+			         '. . . . . . . .\n'
+			         '♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙\n'
+			         '♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖',
+			code='board1._tiles'
+		)
+		self.verify(
+			actual=board2._repr_small(),
+			expected='♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜\n'
+			         '♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟\n'
+			         '. . . . . . . .\n'
+			         '. . . . . . . .\n'
+			         '. . . . . . . .\n'
+			         '. . . . . . . .\n'
+			         '. . . . . . . .\n'
+			         '. . . . . . . .\n'
+			         '. . . . . . . .\n'
+			         '. . . . . . . .\n'
+			         '♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙\n'
+			         '♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖',
+			code='board2._tiles'
+		)
+		# print(eval('board2._tiles'))
+		self.log('set_up')
+		return board1, board2
+
+	def test_board11(self):
+		# Given
+		board1, board2 = self.test_set_up()
+		# Then
+		self.verify(
+			actual=str(board1[0, 3]),
+			expected='♕',
+			code='board1[0, 3]'
+		)
+		self.verify(
+			actual=str(board1[0, 3]),
+			expected='♕',
+			code='board2[0, 3]'
+		)
+		self.log('board[0, 3]')
+		return board1, board2
+
+	def test_board_pos(self):
+		# Given
+		board1, board2 = self.test_board11()
+		# When
+		pos = (0, 4)
+		# Then
+		self.verify(
+			actual=str(board1[pos]),
+			expected='♔',
+			code='board1[pos]'
+		)
+		self.verify(
+			actual=str(board1[pos]),
+			expected='♔',
+			code='board2[pos]'
+		)
+		self.log('board[pos]')
+		return board1, board2
+
+	run_tests = test_board_pos
+
+
+TestBoard().run_tests()
 
 
