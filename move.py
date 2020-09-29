@@ -1,5 +1,5 @@
-from piece import *
-
+'''
+'''
 
 class Move:
 

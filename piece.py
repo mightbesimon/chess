@@ -1,4 +1,7 @@
-from move import *
+'''
+'''
+
+from move import Move
 
 WHITE = 'white'
 BLACK = 'black'

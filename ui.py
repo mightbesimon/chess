@@ -1,3 +1,6 @@
+'''
+'''
+
 import tkinter
 import palette
 import chess
@@ -24,7 +27,7 @@ class Frame(tkinter.Tk):
 
 		self.selected = None
 		self.chess = chess.Chess()
-		self.chess.board.set_up()
+		self.chess.set_up()
 		self.update()
 
 	def make_binds(self):
