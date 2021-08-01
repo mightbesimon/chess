@@ -75,7 +75,7 @@ class Frame(tkinter.Tk):
 
 		elif self.selected and (row, col) in self.piece_moves:
 			print(' <Move>', self.selected, (row, col))
-			move, *_ = [m for m in self.piece_moves if (row, col)==m]
+			move, = [m for m in self.piece_moves if (row, col)==m]
 			move.make()
 			self.update()
 			# make AI move
@@ -157,8 +157,9 @@ class Frame(tkinter.Tk):
 	def render_moves(self, moves):
 		length = SIZE // 8
 		for move in moves:
-			point0 = (length*(move.dst[1]+0.5-0.172), SIZE-length*(move.dst[0]+0.5+0.172))
-			point1 = (length*(move.dst[1]+0.5+0.172), SIZE-length*(move.dst[0]+0.5-0.172))
+			row, col = move.dst
+			point0 = (length*(col+0.5-0.172), SIZE-length*(row+0.5+0.172))
+			point1 = (length*(col+0.5+0.172), SIZE-length*(row+0.5-0.172))
 			self.canvas.create_oval(point0, point1,
 				fill='#363636', width=0)
 

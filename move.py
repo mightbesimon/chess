@@ -1,4 +1,8 @@
-'''
+'''	GITHUB PROJECT (2020) - Personal
+	PROJECT NAME - Chess
+	GITHUB REPO - github.com/mightbesimon/chess
+	by Simon | @mightbesimon | github.com/mightbesimon
+	Copyright 2020. All rights reserved.
 '''
 
 class Move:
@@ -36,7 +40,8 @@ class Move:
 		return Move(board[self.src], destination=self.dst)
 
 	def is_legal(self):
-		'''	legal conditions:
+		'''	Validates a chess move.
+			legal conditions:
 			 - within bounds
 			 - not land on same colour
 			 - will not be under check

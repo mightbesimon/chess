@@ -1,3 +1,6 @@
+'''
+'''
+
 from piece import *
 
 
@@ -5,8 +8,8 @@ class Board:
 
 	def __init__(self, ranks=8, files=8):
 		self.dim    = (ranks, files)
-		self._tiles = [ [None]*self.dim[1]
-				for _ in range(self.dim[0]) ]
+		self._tiles = [ [None]*files
+				for _ in range(ranks) ]
 
 	def __getitem__(self, key):
 		'''	@use
@@ -37,8 +40,7 @@ class Board:
 	def _repr_large(self, piece=None):
 		legal_moves = piece.get_legal_moves() if piece else []
 
-		num_rows = self.dim[0]
-		num_cols = self.dim[1]
+		num_rows, num_cols = self.dim
 		#     a   b   c   d   e   f   g   h
 		file_letters = [chr(97+n) for n in range(num_cols)]
 		ret = '    '+'   '.join(file_letters)+'\n'
@@ -46,7 +48,7 @@ class Board:
 		top_corners = '━━━'.join(['┏'] + ['┳']*(num_cols-1) + ['┓'])
 		ret += f'  {top_corners}\n'
 
-		for row in range(self.dim[0])[::-1]:
+		for row in range(num_rows)[::-1]:
 			ret += str((row+1) % 10) + ' '
 			ret +='┃'
 			for col in range(num_cols):
@@ -85,8 +87,8 @@ class Board:
 	# 			if piece.colour==colour]
 
 	def set_up(self):
-		last_rank = self.dim[0]-1
-		num_files = self.dim[1]
+		num_ranks, num_files = self.dim
+		last_rank = num_ranks-1
 
 		# types = [ Rook, Knight, Bishop, Queen,
 		#           King, Bishop, Knight, Rook ]

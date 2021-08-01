@@ -1,8 +1,7 @@
-from piece import *
-from board import *
+'''
+'''
 
-WHITE = 'white'
-BLACK = 'black'
+from board import *
 
 
 class Chess:
@@ -15,6 +14,9 @@ class Chess:
 		# self.captured = {}
 		# for _ in [WHITE, BLACK]:
 		# 	self.captured[_] = []
+
+	def set_up(self):
+		self.board.set_up()
 
 	def is_checkmate(self, colour):
 		''' checkmate conditions:
