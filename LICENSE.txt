@@ -1,0 +1,21 @@
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃    [!] * * * IMPORTANT * * * [!]    ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+Copyright 2021-2022 mightbesimon | github.com/mightbesimon
+All rights reserved.
+
+The contents of this repository are protected by copyright. Material
+belonging to others may have been used and copied under the Creative Commons
+CC0 Licence. Any attempt to further copy, modify, reproduce, or distribute
+any content of this repository must comply with intellectual property
+legislations of New Zealand, including but not limited to the Copyright Act
+1994, and with the express permission of 'mightbesimon', the copyright owner.
+Failure to comply with this notice may result in exposure to legal actions
+for, including but not limited to, copyright infringement by the owner,
+authorised representatives, and or a third party.
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Copyright 2021-2022 mightbesimon    ┃
+┃ All rights reserved.                ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
